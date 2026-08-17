@@ -12,4 +12,3 @@ kafka/certs/securestream-kafka-secret.json
 *.p12
 Kafka/certs/
 
-screenshots/
