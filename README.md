@@ -36,42 +36,45 @@ The platform automatically:
 
 # 2. Architecture
 
-```text
-                     LOCAL MACHINE
+```mermaid
+flowchart TD
+    P["Python Log Producer<br/>Local Machine"]
 
-                Python Log Producer
-                        |
-                        | mTLS
-                        | Port 9093
-                        v
-                +---------------+
-                | Apache Kafka  |
-                | Docker on EC2 |
-                +---------------+
-                        |
-                        | mTLS
-                        | Private Port 19093
-                        v
-                +------------------+
-                | AWS ECS/Fargate  |
-                | Python Consumer  |
-                +------------------+
-                    |           |
-                    |           |
-                    v           v
-              Amazon S3     Amazon SQS
-             Application        |
-                 Logs           |
-                                v
-                           AWS Lambda
-                                |
-                         +------+------+
-                         |             |
-                         v             v
-                    Amazon S3      Amazon SNS
-                    Incidents          |
-                                       v
-                                  Email Alert
+    K["Apache Kafka<br/>Docker on Amazon EC2"]
+
+    C["Python Kafka Consumer<br/>AWS ECS / Fargate"]
+
+    SM["AWS Secrets Manager<br/>Kafka Client Certificates"]
+
+    S3L["Amazon S3<br/>Application Logs"]
+
+    SQS["Amazon SQS<br/>Incident Queue"]
+
+    DLQ["Amazon SQS<br/>Dead-Letter Queue"]
+
+    L["AWS Lambda<br/>Incident Processor"]
+
+    S3I["Amazon S3<br/>Incident Records"]
+
+    SNS["Amazon SNS<br/>Critical Alerts"]
+
+    EMAIL["Email Notification"]
+
+    P -->|"mTLS :9093"| K
+    K -->|"mTLS :19093<br/>Private VPC"| C
+
+    SM -->|"Retrieve certificates<br/>using ECS Task Role"| C
+
+    C -->|"Store every log"| S3L
+    C -->|"Detected incidents"| SQS
+
+    SQS -->|"Failed after retries"| DLQ
+    SQS -->|"Trigger"| L
+
+    L -->|"Store incident"| S3I
+    L -->|"Publish alert"| SNS
+
+    SNS --> EMAIL
 ```
 
 Kafka uses two SSL listeners:
