@@ -1095,3 +1095,30 @@ Mutual TLS Security
 ```
 
 The complete end-to-end pipeline was successfully validated from the Python producer through Kafka, ECS/Fargate, S3, SQS, Lambda, SNS, and final email notification.
+
+# Validation Screenshots
+
+## Kafka Producer Delivery
+
+![Kafka producer delivery](screenshots/01-producer-delivered.png)
+
+## ECS/Fargate Consumer
+
+![ECS Fargate task](screenshots/02-ecs-task-running.png)
+
+## CloudWatch Consumer Logs
+
+![CloudWatch consumer logs](screenshots/03-cloudwatch-consumer-logs.png)
+
+## S3 Application Logs
+
+![S3 application logs](screenshots/04-s3-application-logs.png)
+
+## S3 Incident Records
+
+![S3 incident records](screenshots/05-s3-incidents.png)
+
+## SNS Email Alert
+
+![SNS email alert](screenshots/06-sns-email-alert.png)
+
